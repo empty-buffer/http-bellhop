@@ -1,4 +1,4 @@
-use crate::tools::files::configs::FilesError::{FileNotFound, FolderNotFound};
+use crate::tools::files::configs::FilesError::FileNotFound;
 use std::path::PathBuf;
 use std::{
     fs::{self},
@@ -6,13 +6,11 @@ use std::{
     path::Path,
 };
 
-#[derive(thiserror::Error, Debug)]
-pub enum FilesError {
-    #[error("folder not exists")]
+pub type Result<T> = core::result::Result<T, Error>;
+
+pub enum Error {
     FolderNotFound,
-    #[error("file not exists")]
     FileNotFound,
-    #[error("error while retrieving lib.data.files.files: {0}")]
     Error(String),
 }
 
@@ -22,7 +20,7 @@ impl From<io::Error> for FilesError {
     }
 }
 
-pub fn get_cfg(path: &str) -> Result<PathBuf, FilesError> {
+pub fn get_config(path: &str) -> Result<PathBuf, Error> {
     let file = PathBuf::from(path);
     if file.is_file() {
         return Ok(file);

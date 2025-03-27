@@ -1,0 +1,21 @@
+{
+  "name": "bellhop.dev",
+  "environment": [
+    {
+      "name": "dev",
+      "host": "http://localhost:8091/metrics"
+    },
+    {
+      "name": "lab",
+      "host": "http://localhost:8091/metrics"
+    }
+  ],
+  "method": "GET",
+  "headers": [
+    {
+      "Content-Type": "application/json"
+    }
+  ],
+  "body": "",
+  "expected_status": "200"
+}
