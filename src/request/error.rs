@@ -1,23 +1,20 @@
 use derive_more::From;
-use std::fmt::Display;
-
-use crate::config;
-use crate::files;
 
 pub type Result<T> = core::result::Result<T, Error>;
 
 #[derive(Debug, From)]
 pub enum Error {
-    BadArguments(String),
+    ConnectionError(String),
+    UnexpectedError(String),
 
     #[from]
-    Files(files::Error),
+    Request(reqwest::Error),
 
     #[from]
-    Config(config::error::Error),
+    Io(std::io::Error),
 }
 
-impl Display for Error {
+impl std::fmt::Display for Error {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "{self:?}")
     }

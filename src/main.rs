@@ -1,14 +1,14 @@
 // use bellhop::domain::config;
 // use bellhop::tools::files::configs::{get_cfg, get_files};
 
-use std::string::ToString;
-// use structopt::StructOpt;
-
 use clap::{Arg, Command};
+use std::string::ToString;
 
 mod config;
 mod error;
 mod files;
+mod parser;
+mod request;
 
 pub use self::error::{Error, Result};
 const DEFAULT_ENV: &str = "default";
@@ -102,7 +102,6 @@ fn main() -> Result<()> {
             Arg::new("file")
                 .short('f')
                 .long("file")
-                // .value_parser([".bellhop.json", "verbose"])
                 .default_value("bellhop.json"),
         ])
         .get_matches();
@@ -123,10 +122,14 @@ fn main() -> Result<()> {
 
     let cfg = config::deserialize_data(path.as_path())?;
 
-    match cfg.to_request(&env)?.do_request() {
-        Ok(()) => (),
-        Err(e) => println!("Request filed: {:?}", e),
-    }
+    println!("{:?}", cfg);
+
+    // let cfg = config::deserialize_data(path.as_path())?;
+
+    // match cfg.to_request(&env)?.do_request() {
+    //     Ok(()) => (),
+    //     Err(e) => println!("Request filed: {:?}", e),
+    // }
 
     Ok(())
 }

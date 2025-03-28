@@ -1,7 +1,5 @@
-use crate::domain::config::fields::method::CfgMethod;
-use crate::service::ResultError::{ConnectionError, UnexpectedError};
-
-use std::error::Error;
+use super::error::{Error, Result};
+use crate::config::fields::CfgMethod;
 
 #[derive(Debug)]
 pub struct Request {
@@ -18,7 +16,7 @@ fn is_ok(status: &str, expected_status: &str) -> bool {
 }
 
 impl Request {
-    pub fn do_request(self) -> Result<(), Box<dyn Error>> {
+    pub fn do_request(self) -> Result<()> {
         let client = reqwest::blocking::Client::builder().build()?;
         let mut request = client.request(self.method.into(), self.host);
         if !self.headers.is_empty() {
@@ -50,14 +48,14 @@ impl Request {
                     println!(
                         "Name: {} --- Failed!\nReason: {}",
                         self.name.as_str(),
-                        ConnectionError(e.to_string())
+                        Error::ConnectionError(e.to_string())
                     );
                     return Ok(());
                 } else {
                     println!(
                         "Name: {} --- Failed!\nReason: {}",
                         self.name.as_str(),
-                        UnexpectedError(e.source().unwrap().to_string())
+                        Error::UnexpectedError(e.to_string())
                     );
                 };
             }

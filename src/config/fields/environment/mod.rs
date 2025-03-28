@@ -2,19 +2,16 @@ pub mod name;
 pub use name::Name;
 pub mod host;
 pub use host::Host;
-use serde::{Deserialize, Serialize};
+pub mod error;
 
-#[derive(thiserror::Error, Debug)]
-#[error("wrong env argument")]
-pub enum EnvironmentError {
-    NotFound,
-}
+use error::{Error, Result};
+use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Configs(Vec<Config>);
 
 impl Configs {
-    pub fn into_inner(self, env: &str) -> Result<String, EnvironmentError> {
+    pub fn into_inner(self, env: &str) -> Result<String> {
         if env.to_lowercase() == "dev" {
             let ok: Option<&Config> = self.0.iter().find(|&v| v.name == Some(Name::Dev));
             return Ok(ok.unwrap().host.clone().into_inner());
@@ -32,7 +29,7 @@ impl Configs {
             return Ok(ok.unwrap().host.clone().into_inner());
         }
 
-        Err(EnvironmentError::NotFound)
+        Err(Error::NotFound)
     }
 
     // fn check_if_exist(self, env: Name) -> Result<String, EnvironmentError> {
