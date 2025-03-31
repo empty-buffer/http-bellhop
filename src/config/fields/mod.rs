@@ -3,6 +3,8 @@ pub mod environment;
 pub mod name;
 pub use name::Name;
 
+pub mod path;
+
 pub mod body;
 pub use body::Body;
 

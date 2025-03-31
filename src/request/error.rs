@@ -8,6 +8,9 @@ pub enum Error {
     UnexpectedError(String),
 
     #[from]
+    Url(url::ParseError),
+
+    #[from]
     Request(reqwest::Error),
 
     #[from]

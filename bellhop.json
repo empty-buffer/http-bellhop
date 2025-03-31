@@ -2,20 +2,47 @@
   "name": "bellhop.dev",
   "environment": [
     {
-      "name": "dev",
-      "host": "http://localhost:8091/metrics"
+      "env": "default",
+      "host": "http://localhost:2112"
     },
     {
-      "name": "lab",
-      "host": "http://localhost:8091/metrics"
+      "env": "lab",
+      "host": "http://localhost:2112"
     }
   ],
-  "method": "GET",
-  "headers": [
+  "endpoints": [
     {
-      "Content-Type": "application/json"
+      "path": "/metrics",
+      "method": "GET",
+      "headers": [
+        {
+          "Content-Type": "application/json"
+        }
+      ],
+      "body": "",
+      "expected_status": "200"
+    },
+    {
+      "path": "/readiness",
+      "method": "GET",
+      "headers": [
+        {
+          "Content-Type": "application/json"
+        }
+      ],
+      "body": "",
+      "expected_status": "200"
+    },
+    {
+      "path": "/liveness",
+      "method": "GET",
+      "headers": [
+        {
+          "Content-Type": "application/json"
+        }
+      ],
+      "body": "",
+      "expected_status": "200"
     }
-  ],
-  "body": "",
-  "expected_status": "200"
+  ]
 }

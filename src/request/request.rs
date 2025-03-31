@@ -1,10 +1,12 @@
 use super::error::{Error, Result};
 use crate::config::fields::CfgMethod;
+use url::Url;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Request {
     pub name: String,
     pub host: String,
+    pub endpoint: String,
     pub method: CfgMethod,
     pub headers: Vec<(String, String)>,
     pub body: String,
@@ -16,22 +18,32 @@ fn is_ok(status: &str, expected_status: &str) -> bool {
 }
 
 impl Request {
+    fn build_url(&self) -> Result<Url> {
+        let url = Url::parse(&self.host)?.join(&self.endpoint)?;
+
+        Ok(url)
+    }
+
     pub fn do_request(self) -> Result<()> {
         let client = reqwest::blocking::Client::builder().build()?;
-        let mut request = client.request(self.method.into(), self.host);
+        let url = self.build_url()?;
+
+        let mut request = client.request(self.method.into(), url);
         if !self.headers.is_empty() {
             for (k, v) in self.headers {
                 request = request.header(k, v);
             }
         }
+
         let r = request.json(self.body.as_str()).send();
         println!("-----");
         match r {
             Ok(res) => {
                 if is_ok(res.status().as_str(), self.expected_status.as_str()) {
                     println!(
-                        "Name: {} --- Ok\nResponse status code: {}",
+                        "Name: {} --- {} Ok\nResponse status code: {}",
                         self.name,
+                        self.endpoint,
                         res.status().as_str()
                     )
                 } else {

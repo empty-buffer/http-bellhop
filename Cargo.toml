@@ -17,3 +17,4 @@ reqwest = { version = "0.11.18", features = ["blocking", "json", "cookies"] }
 http = "0.2.9"
 clap = "4.5.34"
 derive_more = { version = "2.0.1", features = ["from"] }
+url = "2.5.4"

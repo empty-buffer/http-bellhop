@@ -1,6 +1,3 @@
-// use bellhop::domain::config;
-// use bellhop::tools::files::configs::{get_cfg, get_files};
-
 use clap::{Arg, Command};
 use std::string::ToString;
 
@@ -13,21 +10,6 @@ mod request;
 pub use self::error::{Error, Result};
 const DEFAULT_ENV: &str = "default";
 
-// #[derive(StructOpt, Debug)]
-// enum Command {
-//     File{
-//         #[structopt(short, long, help = "location of json file to run")]
-//         file: Option<String>,
-//     },
-//     Dir {
-//         #[structopt(short, long, help = "location of dir with json files to run")]
-//         dir: Option<String>,
-//     },
-//     // Default{
-//     //     default_request: bool,
-//     // }
-// }
-
 /// `Opt` is a structure that handles command-line arguments for the HTTP Bellhop CLI tool.
 ///
 /// It includes the following options:
@@ -37,21 +19,6 @@ const DEFAULT_ENV: &str = "default";
 ///
 /// All the options are not required and have an Option<String> type.
 ///
-/// This struct is derived from `StructOpt` for command-line argument parsing and `Debug` for formatting trait.
-// #[derive(StructOpt, Debug)]
-// #[structopt(name = "http-bellhop", about = "HTTP Bellhop CLI tool for API testing")]
-// struct Opt {
-//     // #[structopt(subcommand)]
-//     // command: Command,
-//     // #[structopt(default_value = "http://127.0.0.1:8000", env = "BELLHOP_ADDR")]
-//     // addr: String,
-//     #[structopt(short, long, help = "what env setup should be used")]
-//     env: Option<String>,
-//     #[structopt(short, long, help = "location of json file to run")]
-//     file: Option<String>,
-//     #[structopt(short, long, help = "location of dir with json files to run")]
-//     dir: Option<String>,
-// }
 
 // fn run(opt: Opt) -> Result<(), Box<dyn Error>> {
 //     let env: String;
@@ -120,16 +87,18 @@ fn main() -> Result<()> {
 
     let path = files::get_config(file_arg.as_str())?;
 
-    let cfg = config::deserialize_data(path.as_path())?;
+    let request_conf = config::deserialize_data(path.as_path())?;
 
-    println!("{:?}", cfg);
+    // println!("{:?}", request_conf);
 
-    // let cfg = config::deserialize_data(path.as_path())?;
+    let requests =
+        request_conf.to_request(&config::fields::environment::env::Env::Default.into_inner())?;
 
-    // match cfg.to_request(&env)?.do_request() {
-    //     Ok(()) => (),
-    //     Err(e) => println!("Request filed: {:?}", e),
-    // }
+    for req in requests.iter() {
+        if let Err(e) = req.clone().do_request() {
+            println!("{:?}", e)
+        }
+    }
 
     Ok(())
 }

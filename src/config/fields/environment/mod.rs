@@ -1,5 +1,4 @@
-pub mod name;
-pub use name::Name;
+pub mod env;
 pub mod host;
 pub use host::Host;
 pub mod error;
@@ -7,25 +6,27 @@ pub mod error;
 use error::{Error, Result};
 use serde::{Deserialize, Serialize};
 
+use env::Env;
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Configs(Vec<Config>);
 
 impl Configs {
     pub fn into_inner(self, env: &str) -> Result<String> {
-        if env.to_lowercase() == "dev" {
-            let ok: Option<&Config> = self.0.iter().find(|&v| v.name == Some(Name::Dev));
+        if env.to_lowercase() == "default" {
+            let ok: Option<&Config> = self.0.iter().find(|&v| v.env == Some(Env::Default));
             return Ok(ok.unwrap().host.clone().into_inner());
         }
         if env.to_lowercase() == "stage" {
-            let ok: Option<&Config> = self.0.iter().find(|&v| v.name == Some(Name::Stage));
+            let ok: Option<&Config> = self.0.iter().find(|&v| v.env == Some(Env::Stage));
             return Ok(ok.unwrap().host.clone().into_inner());
         }
         if env.to_lowercase() == "lab" {
-            let ok: Option<&Config> = self.0.iter().find(|&v| v.name == Some(Name::Lab));
+            let ok: Option<&Config> = self.0.iter().find(|&v| v.env == Some(Env::Lab));
             return Ok(ok.unwrap().host.clone().into_inner());
         }
         if env.to_lowercase() == "prod" {
-            let ok: Option<&Config> = self.0.iter().find(|&v| v.name == Some(Name::Prod));
+            let ok: Option<&Config> = self.0.iter().find(|&v| v.env == Some(Env::Prod));
             return Ok(ok.unwrap().host.clone().into_inner());
         }
 
@@ -58,7 +59,7 @@ impl Default for Configs {
         let default_config: Vec<Config> = vec![{
             Config {
                 host: Host::default(),
-                name: Name::new(),
+                env: Env::new(),
             }
         }];
         Self(default_config)
@@ -68,14 +69,14 @@ impl Default for Configs {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Config {
     pub host: Host,
-    pub name: Option<Name>,
+    pub env: Option<Env>,
 }
 
 impl Default for Config {
     fn default() -> Self {
         Self {
             host: Host::default(),
-            name: Name::new(),
+            env: Env::new(),
         }
     }
 }
